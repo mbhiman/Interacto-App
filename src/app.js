@@ -17,7 +17,7 @@ mongoDB()
 app.use(express.json());
 
 app.get("/sign-up", async (req, res) => {
-    
+
     const user = new User(req.body);
 
     try {
@@ -26,5 +26,14 @@ app.get("/sign-up", async (req, res) => {
     } catch (err){
         res.status(400).message("Something went wrong: ", err.message);
     }
-    
+})
+
+app.delete("/delete-user", async (req, res) =>{
+    try{
+        const _id = req.body._id;
+        await User.findByIdAndDelete({_id});
+        console.log("User deleted successfully");
+    } catch(error){
+        error.status(404).send("Something went wrong", error);
+    }
 })
