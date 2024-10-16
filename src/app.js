@@ -14,23 +14,11 @@ mongoDB()
         console.log("Database is not connected :", err);
     })
 
-app.post("/sign-up", async (req, res) => {
+app.use(express.json());
+
+app.get("/sign-up", async (req, res) => {
     
-    /*
-    const userObj = {
-        firstName: "Bhiman",
-        lastName: "Singha",
-        email: "vman23@gmail.com",
-        password: "bhi@122"
-    };
-    const user = new User(userObj);
-    */
-    const user = new User({
-        firstName: "Bhiman",
-        lastName: "Singha",
-        email: "vman23@gmail.com",
-        password: "bhi@122"
-    });
+    const user = new User(req.body);
 
     try {
         await user.save();
