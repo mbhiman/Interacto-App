@@ -46,7 +46,7 @@ app.patch("/update-user", async (req, res) => {
   }
 });
 
-app.post("/find-user-by-email" , async (req, res) =>{
+app.get("/find-user-by-email" , async (req, res) =>{
   const userEmail = req.body.email;
   try {
     const user = await User.findOne({email : userEmail});
