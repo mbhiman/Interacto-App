@@ -28,6 +28,18 @@ const userSchema = new mongoose.Schema({
         required: true,
         minLength: 8,
         select: false,
+    },
+    age: {
+        type: Number,
+        min: 18
+    },
+    gender: {
+        type: String,
+        validate(value){
+            if(!["male", "female", "others"].includes(value)){
+                throw new Error("Gender must be male/female/others");
+            }
+        }
     }
 });
 
