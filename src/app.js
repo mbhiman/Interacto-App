@@ -32,30 +32,43 @@ app.delete("/delete-user", async (req, res) => {
     await User.findByIdAndDelete({ _id });
     console.log("User deleted successfully");
   } catch (error) {
-    return res.status(404).send("Something went wrong"+ error.message);
+    return res.status(404).send("Something went wrong" + error.message);
   }
 });
 
-app.patch("/update-user", async (req, res) => {
+app.patch("/update-user/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  const data = req.body;
   try {
-    const userId = req.body._id;
-    const data = req.body;
+    const ALLOWED_UPDATES =[
+      "firstName",
+      "lastName",
+      "password",
+      "age",
+      "gender"
+    ];
+    const isUpdateAllowed = Object.keys(data).every((k) =>{
+      return ALLOWED_UPDATES.includes(k);
+    });
+    if(!isUpdateAllowed) {
+      throw new Error("Update not allowed");
+    }
+
     await User.findByIdAndUpdate({ _id: userId }, data);
   } catch (error) {
     return res.status(404).send("Something went wrong:" + error.message);
   }
 });
 
-app.get("/find-user-by-email" , async (req, res) =>{
+app.get("/find-user-by-email", async (req, res) => {
   const userEmail = req.body.email;
   try {
-    const user = await User.findOne({email : userEmail});
-    if(!user){
+    const user = await User.findOne({ email: userEmail });
+    if (!user) {
       return res.status(404).send("User not found");
     }
     res.send(user);
   } catch (error) {
     res.status(500).send("Error: " + error.message);
   }
-})
-
+});
