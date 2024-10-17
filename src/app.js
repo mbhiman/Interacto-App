@@ -20,9 +20,9 @@ app.post("/sign-up", async (req, res) => {
   const user = new User(req.body);
   try {
     await user.save();
-    res.send("User added succeddfully.");
+    return res.send("User added succeddfully.");
   } catch (err) {
-    res.status(400).send("Something went wrong: " + err.message);
+    return res.status(400).send("Something went wrong: " + err.message);
   }
 });
 
@@ -32,7 +32,7 @@ app.delete("/delete-user", async (req, res) => {
     await User.findByIdAndDelete({ _id });
     console.log("User deleted successfully");
   } catch (error) {
-    res.status(404).send("Something went wrong"+ error.message);
+    return res.status(404).send("Something went wrong"+ error.message);
   }
 });
 
@@ -42,7 +42,7 @@ app.patch("/update-user", async (req, res) => {
     const data = req.body;
     await User.findByIdAndUpdate({ _id: userId }, data);
   } catch (error) {
-    res.status(404).send("Something went wrong:" + error.message);
+    return res.status(404).send("Something went wrong:" + error.message);
   }
 });
 
