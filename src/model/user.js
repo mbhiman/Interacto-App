@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
                 throw new Error("Gender must be male/female/others");
             }
         }
-    }
+    },
 });
 
 const User = mongoose.model("User", userSchema);
