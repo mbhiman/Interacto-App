@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const mongoDB = require("./config/database");
 const User = require("./model/user");
+const { validateSignupData } = require("./utils/validation");
 
 mongoDB()
   .then(() => {
@@ -17,6 +18,9 @@ mongoDB()
 app.use(express.json());
 
 app.post("/sign-up", async (req, res) => {
+
+  validateSignupData(req);
+
   const user = new User(req.body);
   try {
     await user.save();
