@@ -3,6 +3,7 @@ const app = express();
 const mongoDB = require("./config/database");
 const User = require("./model/user");
 const { validateSignupData } = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 mongoDB()
   .then(() => {
