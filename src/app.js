@@ -19,11 +19,19 @@ mongoDB()
 app.use(express.json());
 
 app.post("/sign-up", async (req, res) => {
-
-  validateSignupData(req);
-
-  const user = new User(req.body);
   try {
+    validateSignupData(req);
+    const { firstName, lastName, email, password } = req.body;
+
+    const hashPassword = await bcrypt.hash(password, 10);
+    console.log(hashPassword);
+    
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashPassword
+    });
     await user.save();
     return res.send("User added succeddfully.");
   } catch (err) {
@@ -45,17 +53,17 @@ app.patch("/update-user/:userId", async (req, res) => {
   const userId = req.params.userId;
   const data = req.body;
   try {
-    const ALLOWED_UPDATES =[
+    const ALLOWED_UPDATES = [
       "firstName",
       "lastName",
       "password",
       "age",
-      "gender"
+      "gender",
     ];
-    const isUpdateAllowed = Object.keys(data).every((k) =>{
+    const isUpdateAllowed = Object.keys(data).every((k) => {
       return ALLOWED_UPDATES.includes(k);
     });
-    if(!isUpdateAllowed) {
+    if (!isUpdateAllowed) {
       throw new Error("Update not allowed");
     }
 
