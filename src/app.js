@@ -21,12 +21,28 @@ mongoDB()
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/profile", (req, res) =>{
-  const cookies = req.cookies;
-  console.log(cookies);
-  
-  res.send("reading cookies");
-})
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("Invalid Token");
+    }
+
+    const decodedMessage = await jwt.verify(token, "DevTinder@2001");
+    const { _id } = decodedMessage;
+
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+
+    res.send(user);
+  } catch (error) {
+    return res.status(404).send("Something went wrong:" + error.message);
+  }
+});
 
 app.post("/sign-up", async (req, res) => {
   try {
@@ -35,12 +51,12 @@ app.post("/sign-up", async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
     console.log(hashPassword);
-    
+
     const user = new User({
       firstName,
       lastName,
       email,
-      password: hashPassword
+      password: hashPassword,
     });
     await user.save();
     return res.send("User added succeddfully.");
@@ -51,29 +67,27 @@ app.post("/sign-up", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const {email, password} = req.body;
+    const { email, password } = req.body;
     const user = await User.findOne({ email });
 
-    if(!user) {
+    if (!user) {
       throw new Error("Invalid Credentials");
-      
-    } 
+    }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
 
-    if(isValidPassword){
-      res.cookie("token", "kvgdtfjkayecvui");
+    if (isValidPassword) {
+      const token = await jwt.sign({ _id: user._id }, "DevTinder@2001");
+      
+      res.cookie("token", token);
       res.send("Login successfully");
     } else {
       throw new Error("Invalid Credentials");
-      
     }
-
   } catch (error) {
-      return res.status(404).send("Something went wrong:" + error.message);
-    
+    return res.status(404).send("Something went wrong:" + error.message);
   }
-})
+});
 
 app.delete("/delete-user", async (req, res) => {
   try {
