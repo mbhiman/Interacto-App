@@ -20,6 +20,13 @@ mongoDB()
 app.use(express.json());
 app.use(cookieParser());
 
+app.get("/profile", (req, res) =>{
+  const cookies = req.cookies;
+  console.log(cookies);
+  
+  res.send("reading cookies");
+})
+
 app.post("/sign-up", async (req, res) => {
   try {
     validateSignupData(req);
@@ -54,6 +61,7 @@ app.post("/login", async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if(isValidPassword){
+      res.cookie("token", "kvgdtfjkayecvui");
       res.send("Login successfully");
     } else {
       throw new Error("Invalid Credentials");
