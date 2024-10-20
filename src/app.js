@@ -52,10 +52,10 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid Credentials");
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await user.validatePassword(password);
 
     if (isValidPassword) {
-      const token = await jwt.sign({ _id: user._id }, "DevTinder@2001");
+      const token = await user.getJWT();
 
       res.cookie("token", token);
       res.send("Login successfully");
@@ -63,7 +63,7 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid Credentials");
     }
   } catch (error) {
-    return res.status(404).send("Something went wrong:" + error.message);
+    return res.status(404).send("Something went wrong: " + error.message);
   }
 });
 
@@ -76,6 +76,16 @@ app.delete("/delete-user", async (req, res) => {
     return res.status(404).send("Something went wrong" + error.message);
   }
 });
+
+app.post("/connection-request", userAuth, (req, res) => {
+  try {
+    const user = req.user;
+    console.log("Connection request sent by " + user.firstName);
+
+  } catch (error) {
+      res.status(404).send("Something went wrong: " + error.message);
+  }
+})
 
 app.patch("/update-user/:userId", async (req, res) => {
   const userId = req.params.userId;
