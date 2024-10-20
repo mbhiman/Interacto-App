@@ -6,41 +6,19 @@ const { validateSignupData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
-mongoDB()
-  .then(() => {
-    console.log("Database is connected");
-    app.listen(3000, () => {
-      console.log("Successfully listened on the port 3000");
-    });
-  })
-  .catch((err) => {
-    console.log("Database is not connected :", err);
-  });
 
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-
-    const { token } = cookies;
-    if (!token) {
-      throw new Error("Invalid Token");
-    }
-
-    const decodedMessage = await jwt.verify(token, "DevTinder@2001");
-    const { _id } = decodedMessage;
-
-    const user = await User.findById(_id);
-    if (!user) {
-      throw new Error("User does not exist");
-    }
+    const user = req.user;
 
     res.send(user);
   } catch (error) {
-    return res.status(404).send("Something went wrong:" + error.message);
+    return res.status(404).send("Something went wrong: " + error.message);
   }
 });
 
@@ -78,7 +56,7 @@ app.post("/login", async (req, res) => {
 
     if (isValidPassword) {
       const token = await jwt.sign({ _id: user._id }, "DevTinder@2001");
-      
+
       res.cookie("token", token);
       res.send("Login successfully");
     } else {
@@ -135,3 +113,14 @@ app.get("/find-user-by-email", async (req, res) => {
     res.status(500).send("Error: " + error.message);
   }
 });
+
+mongoDB()
+  .then(() => {
+    console.log("Database is connected");
+    app.listen(3000, () => {
+      console.log("Successfully listened on the port 3000");
+    });
+  })
+  .catch((err) => {
+    console.log("Database is not connected :", err);
+  });
