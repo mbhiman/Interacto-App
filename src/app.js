@@ -4,6 +4,7 @@ const mongoDB = require("./config/database");
 const User = require("./model/user");
 const { validateSignupData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
 
 mongoDB()
   .then(() => {
@@ -17,6 +18,7 @@ mongoDB()
   });
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/sign-up", async (req, res) => {
   try {
