@@ -54,6 +54,13 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    about: {
+        type: String,
+        maxLength: 100
+    },
+    skills: {
+        type: [String]
+    }
 });
 
 userSchema.methods.getJWT = async function () {
