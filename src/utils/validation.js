@@ -32,9 +32,7 @@ const validateEditProfileData = (req) => {
         "gender", 
         "skills"
     ];
-    const isEditAllowed = Object.keys(req.body).every(fields => {
-        allowedEditFields.includes(fields)
-    });
+    const isEditAllowed = Object.keys(req.body).every(fields => allowedEditFields.includes(fields));
     return isEditAllowed;
 }
 
