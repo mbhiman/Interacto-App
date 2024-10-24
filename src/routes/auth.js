@@ -7,7 +7,7 @@ const { validateSignupData } = require("../utils/validation");
 authRouter.post("/sign-up", async (req, res) => {
     try {
         validateSignupData(req);
-        const { firstName, lastName, email, password } = req.body;
+        const { firstName, lastName, email, password, age, about, gender, skills } = req.body;
 
         const hashPassword = await bcrypt.hash(password, 10);
         console.log(hashPassword);
@@ -17,6 +17,10 @@ authRouter.post("/sign-up", async (req, res) => {
             lastName,
             email,
             password: hashPassword,
+            age, 
+            about,
+            gender,
+            skills
         });
         await user.save();
         return res.send("User added succeddfully.");
